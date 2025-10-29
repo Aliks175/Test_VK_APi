@@ -1,21 +1,18 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using static System.Collections.Specialized.BitVector32;
 
 public class TimerOrder : MonoBehaviour
 {
     [SerializeField] private Slider _slider;
     [SerializeField] private float _timeWait = 10f;
     [SerializeField] private float _timeGoodJob = 10f;
-
     private TimerInfo TimerWait;
     private TimerInfo TimerGoodJob;
-
     private Action _action;
-    private bool _isPlay = false;
     private float _startTime = 0;
     private float _lostTime = 0;
+    private bool _isPlay = false;
 
     public void Initialize()
     {
@@ -28,15 +25,11 @@ public class TimerOrder : MonoBehaviour
         Wait();
     }
 
-    private void Wait() // Собрать все таймеры и запускать через единый Update
+    private void Wait()
     {
         if (_isPlay)
         {
             if (_action == null) return;
-
-            //Debug.Log($"Time - {Time.time}   _lostTime - {_lostTime} ");
-            //Debug.Log($"Time - {(_speed * _lostTime) % _startTime} ");
-
             if (_lostTime > 0)
             {
                 var gf = _lostTime / _startTime;
@@ -56,7 +49,7 @@ public class TimerOrder : MonoBehaviour
         _lostTime = _timeWait;
     }
 
-    public void Play( Action action)
+    public void Play(Action action)
     {
         if (!_isPlay)
         {
@@ -72,5 +65,4 @@ public class TimerOrder : MonoBehaviour
         _lostTime = _timeWait;
         _isPlay = false;
     }
-
 }

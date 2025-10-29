@@ -3,37 +3,34 @@ using UnityEngine;
 
 public class PinManager : MonoBehaviour
 {
+    public bool IsCreate { get; private set; }
     [SerializeField] private OrderManager _orderManager;
-    private List<SlotPin> list;
+    [SerializeField] private MySpinner _spinner;
+    private TimerInfo _timerCreate;
+    private List<SlotPin> _pinSlots;
 
-    private void Awake()
+    public void Initialize(InfoPinManager infoPinManager)
     {
-        list = new List<SlotPin>(gameObject.GetComponentsInChildren<SlotPin>());
-    }
-
-    public void Initialize()
-    {
-        //Заполнить список листов 
-        // list = new List<AnvilSlot>(gameObject.GetComponentsInChildren<AnvilSlot>());
-        foreach (SlotPin slot in list)
+        _spinner.Initialize();
+        _timerCreate = new TimerInfo() { Color = new Color(0, 1, 1, 1), StartTime = infoPinManager.WaitCreatePin };
+        _pinSlots = new List<SlotPin>(gameObject.GetComponentsInChildren<SlotPin>(true));
+        int count = infoPinManager.ValuePinSlot > _pinSlots.Count + 1 ? _pinSlots.Count : infoPinManager.ValuePinSlot;
+        List<SlotPin> templist = new();
+        for (int i = 0; i < count; i++)
+        {
+            templist.Add(_pinSlots[i]);
+        }
+        _pinSlots = templist;
+        foreach (SlotPin slot in _pinSlots)
         {
             slot.Initialize(_orderManager);
         }
     }
 
-    private void Start() // Когда будет единая точка входа удалить 
-    {
-        Initialize();
-        if (list != null)
-        {
-            //Debug.Log($"Count = {list.Count}");
-        }
-    }
-
     public SlotPin CheckFreeSlot()
     {
-        if (list == null) return null;
-        foreach (SlotPin slot in list)
+        if (_pinSlots == null) return null;
+        foreach (SlotPin slot in _pinSlots)
         {
             if (slot.IsFree)
             {
@@ -43,6 +40,20 @@ public class PinManager : MonoBehaviour
         return null;
     }
 
+    public void AddPin()
+    {
+        _spinner.Play(_timerCreate, CreatePin);
+        IsCreate = true;
+    }
+
+    private void CreatePin()
+    {
+        foreach (SlotPin slot in _pinSlots)
+        {
+            slot.AddPin();
+        }
+        IsCreate = false;
+    }
 
     private void OnValidate()
     {

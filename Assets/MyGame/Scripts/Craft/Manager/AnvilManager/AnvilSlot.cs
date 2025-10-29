@@ -3,50 +3,32 @@ using UnityEngine.Events;
 
 public class AnvilSlot : MonoBehaviour
 {
-    [SerializeField] private MySpinner _spinner;
-    [SerializeField] private float _timeCreateIron = 4;
-    [SerializeField] private float _timeFire = 8;
-    [SerializeField] private float _timeClearBreack = 3;
-
     public bool IsFree { get; private set; } = true;
     public bool IsIronReady { get; private set; } = false;
     public bool IsFire { get; private set; } = false;
-
+    [SerializeField] private MySpinner _spinner;
+    [SerializeField] private float _timeClearBreack = 3;
     public UnityEvent _initializeEvent;
-
     public UnityEvent _startEvent;
     public UnityEvent _endEvent;
-
     public UnityEvent _endFireEvent;
-
     public UnityEvent _pickUpIronEvent;
     public UnityEvent _clearIronEvent;
+    private TimerInfo _timerFire;
+    private TimerInfo _timerCreateIron;
+    private TimerInfo _timerClearBreackIron;
 
-    private TimerInfo timerFire;
-    private TimerInfo timerCreateIron;
-    private TimerInfo timerClearBreackIron;
-
-    public void Initialize()
+    public void Initialize(float timeCreateIron, float timeFire)
     {
         if (_spinner != null)
         {
             _spinner.Initialize();
         }
-        else
-        {
-            //Debug.LogError($"Not Found MySpinner - {gameObject.name}");
-        }
-        timerCreateIron = new TimerInfo() { Color = new Color(0.5f, 1, 0.5f, 1), StartTime = _timeCreateIron };
-        timerFire = new TimerInfo() { Color = new Color(1, 0, 0, 1), StartTime = _timeFire };
-        timerClearBreackIron = new TimerInfo() { Color = new Color(1, 0.8f,0, 1), StartTime = _timeClearBreack };
+        gameObject.SetActive(true);
+        _timerCreateIron = new TimerInfo() { Color = new Color(0.5f, 1, 0.5f, 1), StartTime = timeCreateIron };
+        _timerFire = new TimerInfo() { Color = new Color(1, 0, 0, 1), StartTime = timeFire };
+        _timerClearBreackIron = new TimerInfo() { Color = new Color(1, 0.8f, 0, 1), StartTime = _timeClearBreack };
         _initializeEvent?.Invoke();
-    }
-
-    private void OnDisable()
-    {
-        if (_spinner != null)
-        {
-        }
     }
 
     public void Play()
@@ -55,7 +37,7 @@ public class AnvilSlot : MonoBehaviour
         if (_spinner != null)
         {
             StartEvent();
-            _spinner.Play(timerCreateIron, EndEvent);
+            _spinner.Play(_timerCreateIron, EndEvent);
         }
     }
 
@@ -71,13 +53,11 @@ public class AnvilSlot : MonoBehaviour
     {
         if (_spinner != null)
         {
-            _spinner.Play(timerClearBreackIron, Clear);
+            _spinner.Play(_timerClearBreackIron, Clear);
         }
     }
 
-
     #region Events
-
     private void Clear()
     {
         IsIronReady = false;
@@ -85,7 +65,6 @@ public class AnvilSlot : MonoBehaviour
         IsFree = true;
         _clearIronEvent?.Invoke();
     }
-
 
     private void StartEvent()
     {
@@ -96,8 +75,8 @@ public class AnvilSlot : MonoBehaviour
     {
         if (_spinner != null)
         {
-            _spinner.Play(timerFire, EndFireEvent);
-            IsIronReady = true; 
+            _spinner.Play(_timerFire, EndFireEvent);
+            IsIronReady = true;
         }
         _endEvent?.Invoke();
     }
@@ -108,16 +87,15 @@ public class AnvilSlot : MonoBehaviour
         IsFire = true;
         _endFireEvent?.Invoke();
     }
-
     #endregion
 
-    //private void OnValidate()
-    //{
-    //    if (_spinner == null)
-    //    {
-    //        _spinner = GetComponentInChildren<MySpinner>(true);
-    //    };
-    //}
+    private void OnValidate()
+    {
+        if (_spinner == null)
+        {
+            _spinner = GetComponentInChildren<MySpinner>(true);
+        };
+    }
 }
 
 public struct TimerInfo
@@ -125,4 +103,3 @@ public struct TimerInfo
     public Color Color;
     public float StartTime;
 }
-

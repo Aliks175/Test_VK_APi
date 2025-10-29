@@ -2,48 +2,43 @@ using UnityEngine;
 
 public class SpriteManager : MonoBehaviour
 {
-    [SerializeField] private Sprite Pin;
-    [SerializeField] private Sprite Sword;
-    [SerializeField] private Sprite SwordLezz;
-    [SerializeField] private Sprite SwordHand;
-    [SerializeField] private Sprite SwordFull;
-    [SerializeField] private Sprite ArmorLeather;
-    [SerializeField] private Sprite ArmorMetall;
+    [SerializeField] private Sprite _pin;
+    [SerializeField] private Sprite _sword;
+    [SerializeField] private Sprite _swordLezz;
+    [SerializeField] private Sprite _swordHand;
+    [SerializeField] private Sprite _swordFull;
+    [SerializeField] private Sprite _armorLeather;
+    [SerializeField] private Sprite _armorMetall;
 
     public Sprite GetSprite(OrderItem orderItem)
     {
         Sprite sprite = null;
-
         switch (orderItem)
         {
             case OrderItem.none:
-                
                 break;
             case OrderItem.Pin:
-                sprite = Pin;
+                sprite = _pin;
                 break;
             case OrderItem.Sword:
-                sprite = Sword;
+                sprite = _sword;
                 break;
             case OrderItem.SwordLezz:
-                sprite = SwordLezz;
+                sprite = _swordLezz;
                 break;
             case OrderItem.SwordHand:
-                sprite = SwordHand;
+                sprite = _swordHand;
                 break;
             case OrderItem.SwordFull:
-
-                sprite = SwordFull;
+                sprite = _swordFull;
                 break;
             case OrderItem.ArmorLeather:
-                sprite = ArmorLeather;
+                sprite = _armorLeather;
                 break;
             case OrderItem.ArmorMetall:
-                sprite = ArmorMetall;
+                sprite = _armorMetall;
                 break;
         }
-
         return sprite;
     }
-
 }

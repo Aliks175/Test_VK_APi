@@ -4,33 +4,19 @@ using UnityEngine;
 
 public class OrderManager : MonoBehaviour
 {
-    public TypeOrder typeOrder;
     private bool _isWork = false;
-    private List<SlotOrder> list;
+    private List<SlotOrder> _orderSlots;
     private Coroutine _coroutine;
 
-    private void Awake()
+    public void Initialize(LevelHard typeOrder)
     {
-        list = new List<SlotOrder>(gameObject.GetComponentsInChildren<SlotOrder>());
-    }
+        _orderSlots = new List<SlotOrder>(gameObject.GetComponentsInChildren<SlotOrder>(true));
 
-    public void Initialize()
-    {
-        //Заполнить список листов 
-        // list = new List<AnvilSlot>(gameObject.GetComponentsInChildren<AnvilSlot>());
+        if (_orderSlots == null) return;
 
-        foreach (SlotOrder slot in list)
+        foreach (SlotOrder slot in _orderSlots)
         {
             slot.Initialize(typeOrder);
-        }
-    }
-
-    private void Start() // Когда будет единая точка входа удалить 
-    {
-        Initialize();
-        if (list != null)
-        {
-            //Debug.Log($"Count = {list.Count}");
         }
     }
 
@@ -47,7 +33,7 @@ public class OrderManager : MonoBehaviour
     public bool UseOrder(OrderItem orderItem)
     {
         bool succsesful = false;
-        foreach (SlotOrder slot in list)
+        foreach (SlotOrder slot in _orderSlots)
         {
             if (!slot.IsVisit)
             {
@@ -68,7 +54,7 @@ public class OrderManager : MonoBehaviour
         {
             yield return null;
 
-            foreach (SlotOrder slot in list)
+            foreach (SlotOrder slot in _orderSlots)
             {
                 yield return new WaitForSeconds(1f);
                 if (slot.IsVisit)
@@ -80,7 +66,7 @@ public class OrderManager : MonoBehaviour
     }
 }
 
-public enum TypeOrder
+public enum LevelHard
 {
     //    1) гвозди 
     //1 ур (Туториал и игровой процесс)

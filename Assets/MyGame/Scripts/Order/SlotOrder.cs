@@ -4,50 +4,40 @@ using UnityEngine.Events;
 
 public class SlotOrder : MonoBehaviour
 {
+    [HideInInspector] public bool IsVisit { get; private set; } = true;
     [Header("ChildrenClass")]
     [SerializeField] private ViewOrder _viewOrder;
     [SerializeField] private TimerOrder _timerOrder;
     [Header("RandomVisitSettings")]
     [SerializeField] private float _timeWaitMax = 7f;
     [SerializeField] private float _timeWaitMin = 3f;
-   [HideInInspector] public bool IsVisit { get; private set; } = true;
-
-
     private ListOrders listOrders;
-    private bool _readyOrder = false;
-    private int levellock;
-    private TypeOrder typeOrder;
+    private LevelHard typeOrder;
     private WaitForSeconds wait = null;
-
-
+    private int levellock;
+    private bool _readyOrder = false;
     public UnityEvent OnInitialize;
-
     public UnityEvent OnStart;
-
     public UnityEvent OnEnd;
+
     /// <summary>
     /// Инициализация проброс зависимостей 
     /// </summary>
     /// <param name = "order" ></ param >
-    public void Initialize(TypeOrder order)
+    public void Initialize(LevelHard order)
     {
         if (_viewOrder != null)
         {
             _viewOrder.Initialize();
         }
-
         if (_timerOrder != null)
         {
             _timerOrder.Initialize();
         }
-
         listOrders = new ListOrders();
         typeOrder = order;
-
         CorectLevelOrder(typeOrder);
         OnInitialize?.Invoke();
-
-      
     }
 
     /// <summary>
@@ -56,7 +46,6 @@ public class SlotOrder : MonoBehaviour
     public void StartWork()
     {
         if (IsVisit == false) return;
-
         ChooseOrder();
         if (CheckListOrder())
         {
@@ -75,7 +64,6 @@ public class SlotOrder : MonoBehaviour
     public void CheckOverOrder()
     {
         if (!_readyOrder) return;
-
         if (!CheckListOrder())
         {
             _viewOrder.OnView(listOrders);
@@ -110,7 +98,7 @@ public class SlotOrder : MonoBehaviour
             _viewOrder.OnView(listOrders);
             if (isUse)
             {
-                _timerOrder.AddTimeWait(); 
+                _timerOrder.AddTimeWait();
             }
         }
         return isUse;
@@ -142,7 +130,6 @@ public class SlotOrder : MonoBehaviour
     }
 
     #region Events
-
     /// <summary>
     /// Unity событие отыгрывается в начале запуска сценария 
     /// </summary>
@@ -150,7 +137,6 @@ public class SlotOrder : MonoBehaviour
     {
         OnStart?.Invoke();
     }
-
     #endregion
 
     private bool CheckListOrder()
@@ -172,9 +158,6 @@ public class SlotOrder : MonoBehaviour
     }
 
     #region CraftSystem
-
-
-
     /// <summary>
     /// Метод создает список заказов пользователя 
     /// </summary>
@@ -269,7 +252,6 @@ public class SlotOrder : MonoBehaviour
     {
         OrderItem armor = new();
         int typeArmorLock = (int)typeOrder;
-
         if (typeArmorLock < 4)
         {
             return OrderItem.ArmorLeather;
@@ -286,9 +268,9 @@ public class SlotOrder : MonoBehaviour
     /// Костыль создает переменную которая используется в ограничении выподения предметов 
     /// </summary>
     /// <param name = "order" ></ param >
-    private void CorectLevelOrder(TypeOrder order)
+    private void CorectLevelOrder(LevelHard order)
     {
-        if (order == TypeOrder.none)
+        if (order == LevelHard.none)
         {
             Debug.LogError($"Not found TypeOrder - {gameObject.name}");
             return;
@@ -303,7 +285,6 @@ public class SlotOrder : MonoBehaviour
             levellock += 1;
         }
     }
-
     #endregion
 
     private void OnValidate()
@@ -313,7 +294,6 @@ public class SlotOrder : MonoBehaviour
             _viewOrder = GetComponent<ViewOrder>();
         }
     }
-
 }
 //    1) гвозди 
 //1 ур (Туториал и игровой процесс)
@@ -325,12 +305,6 @@ public class SlotOrder : MonoBehaviour
 //7 - 10 ур
 //5) гвозди + мечи + кожаный доспех + металлический доспех  + полный меч
 //+10 ур
-//public struct Order
-//{
-//    public bool Pin;//1) гвозди
-//    public TypeSword TypeSword;//мечи
-//    public TypeArmor TypeArmor;//доспехи
-//}
 
 /// <summary>
 /// Является предметом из списка заказов 
@@ -353,4 +327,3 @@ public struct ListOrders
     public OrderItem TwoItem;
     public OrderItem ThreeItem;
 }
-

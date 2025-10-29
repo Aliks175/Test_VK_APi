@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Control : MonoBehaviour
 {
-    public GameObject GoUnityScript;
+    public UnityScript GoUnityScript;
     public Image img;
     private Color32 colorOk;
     private Color32 colorError;
@@ -19,7 +19,7 @@ public class Control : MonoBehaviour
     public void ButClick()
     {
         img.color = colorYellow;
-        GoUnityScript.GetComponent<UnityScript>().RequestJs();
+        GoUnityScript.RequestJs();
     }
 
     public void ResponseFromJsOk()

@@ -3,37 +3,29 @@ using UnityEngine;
 
 public class AnvilManager : MonoBehaviour
 {
-    private List<AnvilSlot> list;
+    private List<AnvilSlot> _anvilSlots;
 
-    private void Awake()
+    public void Initialize(InfoAnvilManager infoAnvilManager)
     {
-        list = new List<AnvilSlot>(gameObject.GetComponentsInChildren<AnvilSlot>());
-    }
+        _anvilSlots = new List<AnvilSlot>(gameObject.GetComponentsInChildren<AnvilSlot>(true));
+        int count = infoAnvilManager.ValueAnvil >= _anvilSlots.Count + 1 ? _anvilSlots.Count : infoAnvilManager.ValueAnvil;
+        List<AnvilSlot> templist = new();
 
-    public void Initialize()
-    {
-        //Заполнить список листов 
-        // list = new List<AnvilSlot>(gameObject.GetComponentsInChildren<AnvilSlot>());
-        foreach (AnvilSlot slot in list)
+        for (int i = 0; i < count; i++)
         {
-            slot.Initialize();
+            templist.Add(_anvilSlots[i]);
         }
-
-    }
-
-    private void Start() // Когда будет единая точка входа удалить 
-    {
-        Initialize();
-        if (list != null)
+        _anvilSlots = templist;
+        foreach (AnvilSlot slot in _anvilSlots)
         {
-            //Debug.Log($"Count = {list.Count}");
+            slot.Initialize(infoAnvilManager.WaitCreateIron, infoAnvilManager.WaitFireIron);
         }
     }
 
     public void AddIron()
     {
-        if (list == null) return;
-        foreach (AnvilSlot slot in list)
+        if (_anvilSlots == null) return;
+        foreach (AnvilSlot slot in _anvilSlots)
         {
             if (slot.IsFree)
             {
@@ -45,12 +37,11 @@ public class AnvilManager : MonoBehaviour
 
     public AnvilSlot CheckFreeAiron()
     {
-        if (list == null) return null;
-        foreach (AnvilSlot slot in list)
+        if (_anvilSlots == null) return null;
+        foreach (AnvilSlot slot in _anvilSlots)
         {
             if (slot.IsIronReady && !slot.IsFire)
             {
-                //slot.PickUpIron();
                 return slot;
             }
         }

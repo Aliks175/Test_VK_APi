@@ -4,37 +4,33 @@ using UnityEngine;
 public class SwordManager : MonoBehaviour
 {
     [SerializeField] private OrderManager _orderManager;
-    private List<SwordSlot> list;
+    [SerializeField] private GameObject _panelUpgrade;
+    [SerializeField] private GameObject _buttonCreate;
+    private List<SwordSlot> _swordSlots;
 
-    private void Awake()
+    public void Initialize(InfoSwordManager infoSwordManager)
     {
-        list = new List<SwordSlot>(gameObject.GetComponentsInChildren<SwordSlot>());
-    }
-
-    public void Initialize()
-    {
-        //Заполнить список листов 
-        // list = new List<AnvilSlot>(gameObject.GetComponentsInChildren<AnvilSlot>());
-        foreach (SwordSlot slot in list)
+        if (infoSwordManager.ValueSwordSlot == 0) return;
+        _swordSlots = new List<SwordSlot>(gameObject.GetComponentsInChildren<SwordSlot>(true));
+        int count = infoSwordManager.ValueSwordSlot > _swordSlots.Count + 1 ? _swordSlots.Count : infoSwordManager.ValueSwordSlot;
+        List<SwordSlot> templist = new();
+        for (int i = 0; i < count; i++)
+        {
+            templist.Add(_swordSlots[i]);
+        }
+        _swordSlots = templist;
+        foreach (SwordSlot slot in _swordSlots)
         {
             slot.Initialize(_orderManager);
         }
-
-    }
-
-    private void Start() // Когда будет единая точка входа удалить 
-    {
-        Initialize();
-        if (list != null)
-        {
-            //Debug.Log($"Count = {list.Count}");
-        }
+        _buttonCreate.SetActive(true);
+        _panelUpgrade.SetActive(infoSwordManager.IsUpgrade);
     }
 
     public void UpgradeSwordHand()
     {
-        if (list == null) return;
-        foreach (SwordSlot slot in list)
+        if (_swordSlots == null) return;
+        foreach (SwordSlot slot in _swordSlots)
         {
             if (!slot.IsFree)
             {
@@ -49,8 +45,8 @@ public class SwordManager : MonoBehaviour
 
     public void UpgradeSwordLezz()
     {
-        if (list == null) return;
-        foreach (SwordSlot slot in list)
+        if (_swordSlots == null) return;
+        foreach (SwordSlot slot in _swordSlots)
         {
             if (!slot.IsFree)
             {
@@ -65,8 +61,8 @@ public class SwordManager : MonoBehaviour
 
     public SwordSlot CheckFreeSlot()
     {
-        if (list == null) return null;
-        foreach (SwordSlot slot in list)
+        if (_swordSlots == null) return null;
+        foreach (SwordSlot slot in _swordSlots)
         {
             if (slot.IsFree)
             {

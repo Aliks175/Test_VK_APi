@@ -49,13 +49,11 @@ public class ViewOrder : MonoBehaviour
         }
     }
 
-
-
-    //private void OnValidate()
-    //{
-    //    if (_spriteManager == null&&gameObject.activeInHierarchy)
-    //    {
-    //        _spriteManager = transform.parent.GetComponent<SpriteManager>();
-    //    }
-    //}
+    private void OnValidate()
+    {
+        if (_spriteManager == null && gameObject.activeInHierarchy)
+        {
+            _spriteManager = transform.parent.GetComponent<SpriteManager>();
+        }
+    }
 }
