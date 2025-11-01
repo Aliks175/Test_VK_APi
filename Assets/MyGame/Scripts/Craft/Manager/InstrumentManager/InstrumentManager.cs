@@ -44,7 +44,7 @@ public class InstrumentManager : MonoBehaviour
     public void CreatePin()
     {
         _iron = _anvilManager.CheckFreeAiron();
-        if (_iron != null && !_pinManager.IsCreate)
+        if (_iron != null)// && !_pinManager.IsCreate)
         {
             _iron.PickUpIron();
             _pinManager.AddPin();

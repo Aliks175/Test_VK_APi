@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class UpGradeSystem : MonoBehaviour
+public class TestPanel : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _textLevel;
     private LevelSettings _levelSettings;
@@ -27,40 +27,6 @@ public class UpGradeSystem : MonoBehaviour
             _textLevel.text = $"Level : {_levelSettings.Level}";
             _levelSettings.ScaleHardLevel();
         }
-    }
-
-    public void UpLevelAnvil()
-    {
-        if (_levelSettings.ValueAnvil == 3) return;
-        _levelSettings.ValueAnvil++;
-        _levelSettings.WaitCreateIron -= 1f;
-        _levelSettings.UpdateChangers(TypeChangers.Anvil);
-    }
-
-    public void UpLevelPin()
-    {
-        if (_levelSettings.ValuePinSlot == 6) return;
-        _levelSettings.ValuePinSlot += 2;
-        _levelSettings.WaitCreatePin -= 1f;
-        _levelSettings.UpdateChangers(TypeChangers.Pin);
-    }
-
-    public void UpLevelSword()
-    {
-        if (_levelSettings.ValueSword == 0) return;
-        if (_levelSettings.ValueSword == 3) return;
-        _levelSettings.ValueSword++;
-        _levelSettings.UpdateChangers(TypeChangers.Sword);
-    }
-
-    public void UpLevelArmor()
-    {
-        if (_levelSettings.ValueArmor == 0) return;
-        if (_levelSettings.ValueArmor == 3) return;
-        _levelSettings.ValueArmor++;
-        _levelSettings.WaitCreateeLeatherArmor -= 1f;
-        _levelSettings.WaitCreateMetallArmor -= 1f;
-        _levelSettings.UpdateChangers(TypeChangers.Armor);
     }
 
     public void ClearUpLevel()

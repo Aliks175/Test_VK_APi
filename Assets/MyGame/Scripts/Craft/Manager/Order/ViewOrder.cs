@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ViewOrder : MonoBehaviour
@@ -7,9 +8,13 @@ public class ViewOrder : MonoBehaviour
     [SerializeField] private Image _twoImage;
     [SerializeField] private Image _threeImage;
     [SerializeField] private SpriteManager _spriteManager;
+    public UnityEvent OnInitialize;
+    public UnityEvent OnStart;
+    public UnityEvent OnEnd;
 
     public void Initialize()
     {
+        OnInitialize?.Invoke();
     }
 
     public void SetView(ListOrders orderList)
@@ -17,6 +22,16 @@ public class ViewOrder : MonoBehaviour
         _oneImage.sprite = _spriteManager.GetSprite(orderList.OneItem);
         _twoImage.sprite = _spriteManager.GetSprite(orderList.TwoItem);
         _threeImage.sprite = _spriteManager.GetSprite(orderList.ThreeItem);
+    }
+
+    public void OnStartEvent()
+    {
+        OnStart?.Invoke();
+    }
+
+    public void OnEndEvent()
+    {
+        OnEnd?.Invoke();
     }
 
     public void OnView(ListOrders orderList)

@@ -1,6 +1,7 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class SlotOrder : MonoBehaviour
 {
@@ -8,17 +9,18 @@ public class SlotOrder : MonoBehaviour
     [Header("ChildrenClass")]
     [SerializeField] private ViewOrder _viewOrder;
     [SerializeField] private TimerOrder _timerOrder;
+    [Header("TimerOrderSettings")]
+    [SerializeField] private float _timeWait = 10f;
     [Header("RandomVisitSettings")]
     [SerializeField] private float _timeWaitMax = 7f;
     [SerializeField] private float _timeWaitMin = 3f;
-    private ListOrders listOrders;
-    private LevelHard typeOrder;
+    private TaskInfo _taskInfo;
+    private ListOrders _listOrders;
+    private LevelHard _typeOrder;
     private WaitForSeconds wait = null;
-    private int levellock;
+    private int _levellock;
     private bool _readyOrder = false;
-    public UnityEvent OnInitialize;
-    public UnityEvent OnStart;
-    public UnityEvent OnEnd;
+    public event Action<TaskInfo> OnCloseOrder;
 
     /// <summary>
     /// Инициализация проброс зависимостей 
@@ -32,12 +34,12 @@ public class SlotOrder : MonoBehaviour
         }
         if (_timerOrder != null)
         {
-            _timerOrder.Initialize();
+            _timerOrder.Initialize(_timeWait);
         }
-        listOrders = new ListOrders();
-        typeOrder = order;
-        CorectLevelOrder(typeOrder);
-        OnInitialize?.Invoke();
+        _listOrders = new ListOrders();
+        _taskInfo = new TaskInfo();
+        _typeOrder = order;
+        CorectLevelOrder(_typeOrder);
     }
 
     /// <summary>
@@ -47,10 +49,10 @@ public class SlotOrder : MonoBehaviour
     {
         if (IsVisit == false) return;
         ChooseOrder();
-        if (CheckListOrder())
+        if (CheckListOrder(OrderItem.none))
         {
             IsVisit = false;
-            _viewOrder.SetView(listOrders);
+            _viewOrder.SetView(_listOrders);
             float time = Random.Range(_timeWaitMin, _timeWaitMax);
             wait = wait ?? new WaitForSeconds(time);
             StartCoroutine(ComonVisit());
@@ -64,14 +66,13 @@ public class SlotOrder : MonoBehaviour
     public void CheckOverOrder()
     {
         if (!_readyOrder) return;
-        if (!CheckListOrder())
+        if (!CheckListOrder(OrderItem.none))
         {
-            _viewOrder.OnView(listOrders);
-            OnEnd?.Invoke();
-            IsVisit = true;
-            _readyOrder = false;
-            ClearListOrder();
-            _timerOrder.Stop();
+            _taskInfo.IsFastOrder = _timerOrder.CheckFastOrder();
+
+            Debug.Log("Use - OnCloseOrder");
+            OnCloseOrder?.Invoke(_taskInfo);
+            Clientleave();
         }
     }
 
@@ -80,38 +81,45 @@ public class SlotOrder : MonoBehaviour
         bool isUse = false;
         if (_readyOrder)
         {
-            if (listOrders.OneItem == order)
+            if (_listOrders.OneItem == order)
             {
-                listOrders.OneItem = OrderItem.none;
+                _listOrders.OneItem = OrderItem.none;
                 isUse = true;
             }
-            else if (listOrders.TwoItem == order)
+            else if (_listOrders.TwoItem == order)
             {
-                listOrders.TwoItem = OrderItem.none;
+                _listOrders.TwoItem = OrderItem.none;
                 isUse = true;
             }
-            else if (listOrders.ThreeItem == order)
+            else if (_listOrders.ThreeItem == order)
             {
-                listOrders.ThreeItem = OrderItem.none;
+                _listOrders.ThreeItem = OrderItem.none;
                 isUse = true;
             }
-            _viewOrder.OnView(listOrders);
-            if (isUse)
-            {
-                _timerOrder.AddTimeWait();
-            }
+            _viewOrder.OnView(_listOrders);
         }
         return isUse;
+    }
+
+    public void AddTimeWait()
+    {
+    _timerOrder.AddTimeWait();
     }
 
     private void Clientleave()
     {
         ClearListOrder();
-        _viewOrder.OnView(listOrders);
-        OnEnd?.Invoke();
+        _viewOrder.OnView(_listOrders);
+        _viewOrder.OnEndEvent();
         IsVisit = true;
         _readyOrder = false;
         _timerOrder.Stop();
+        ClearTaskInfo();
+    }
+
+    private void ClearTaskInfo()
+    {
+        _taskInfo.IsFastOrder = false;
     }
 
     /// <summary>
@@ -122,35 +130,35 @@ public class SlotOrder : MonoBehaviour
     private IEnumerator ComonVisit()
     {
         yield return wait;
-        StartEvent();
-        _viewOrder.OnView(listOrders);
+        _viewOrder.OnStartEvent();
+        _viewOrder.OnView(_listOrders);
         _readyOrder = true;
         _timerOrder.Play(Clientleave);
         //должны обратится к другому классу для отображения заказа
     }
 
-    #region Events
-    /// <summary>
-    /// Unity событие отыгрывается в начале запуска сценария 
-    /// </summary>
-    private void StartEvent()
-    {
-        OnStart?.Invoke();
-    }
-    #endregion
+    //#region Events
+    ///// <summary>
+    ///// Unity событие отыгрывается в начале запуска сценария 
+    ///// </summary>
+    //private void StartEvent()
+    //{
+    //    OnStart?.Invoke();
+    //}
+    //#endregion
 
-    private bool CheckListOrder()
+    private bool CheckListOrder(OrderItem orderItem)
     {
         bool isNotNull = false;
-        if (listOrders.OneItem != OrderItem.none)
+        if (_listOrders.OneItem != orderItem)
         {
             isNotNull = true;
         }
-        else if (listOrders.TwoItem != OrderItem.none)
+        else if (_listOrders.TwoItem != orderItem)
         {
             isNotNull = true;
         }
-        else if (listOrders.ThreeItem != OrderItem.none)
+        else if (_listOrders.ThreeItem != orderItem)
         {
             isNotNull = true;
         }
@@ -171,17 +179,16 @@ public class SlotOrder : MonoBehaviour
         {
             if (i == 0)
             {
-                listOrders.OneItem = ChooseType();
+                _listOrders.OneItem = ChooseType();
             }
             else if (i == 1)
             {
-                listOrders.TwoItem = ChooseType();
+                _listOrders.TwoItem = ChooseType();
             }
             else if (i == 2)
             {
-                listOrders.ThreeItem = ChooseType();
+                _listOrders.ThreeItem = ChooseType();
             }
-
         }
     }
 
@@ -190,9 +197,9 @@ public class SlotOrder : MonoBehaviour
     /// </summary>
     private void ClearListOrder()
     {
-        listOrders.OneItem = OrderItem.none;
-        listOrders.TwoItem = OrderItem.none;
-        listOrders.ThreeItem = OrderItem.none;
+        _listOrders.OneItem = OrderItem.none;
+        _listOrders.TwoItem = OrderItem.none;
+        _listOrders.ThreeItem = OrderItem.none;
     }
 
     /// <summary>
@@ -202,7 +209,7 @@ public class SlotOrder : MonoBehaviour
     private OrderItem ChooseType()
     {
         OrderItem newOrder = new();
-        int typeItem = Random.Range(1, levellock);
+        int typeItem = Random.Range(1, _levellock);
 
         switch (typeItem)
         {
@@ -230,7 +237,7 @@ public class SlotOrder : MonoBehaviour
     private OrderItem ChooseSword()
     {
         OrderItem sword = new();
-        int typeSwordLock = (int)typeOrder;
+        int typeSwordLock = (int)_typeOrder;
 
         if (typeSwordLock < 5)
         {
@@ -251,7 +258,7 @@ public class SlotOrder : MonoBehaviour
     private OrderItem ChooseArmor()
     {
         OrderItem armor = new();
-        int typeArmorLock = (int)typeOrder;
+        int typeArmorLock = (int)_typeOrder;
         if (typeArmorLock < 4)
         {
             return OrderItem.ArmorLeather;
@@ -275,14 +282,14 @@ public class SlotOrder : MonoBehaviour
             Debug.LogError($"Not found TypeOrder - {gameObject.name}");
             return;
         }
-        levellock = (int)order;
-        if (levellock >= 3)
+        _levellock = (int)order;
+        if (_levellock >= 3)
         {
-            levellock = 4;
+            _levellock = 4;
         }
         else
         {
-            levellock += 1;
+            _levellock += 1;
         }
     }
     #endregion

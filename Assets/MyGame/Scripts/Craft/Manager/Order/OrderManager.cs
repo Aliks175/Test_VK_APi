@@ -7,16 +7,27 @@ public class OrderManager : MonoBehaviour
     private bool _isWork = false;
     private List<SlotOrder> _orderSlots;
     private Coroutine _coroutine;
+    private GoalManager _goalManager;
 
-    public void Initialize(LevelHard typeOrder)
+    private void OnDisable()
+    {
+        foreach (SlotOrder slot in _orderSlots)
+        {
+            slot.OnCloseOrder -= _goalManager.CloseOrder;
+        }
+    }
+
+    public void Initialize(LevelHard typeOrder, GoalManager taskManager)
     {
         _orderSlots = new List<SlotOrder>(gameObject.GetComponentsInChildren<SlotOrder>(true));
 
+        _goalManager = taskManager;
         if (_orderSlots == null) return;
 
         foreach (SlotOrder slot in _orderSlots)
         {
             slot.Initialize(typeOrder);
+            slot.OnCloseOrder += _goalManager.CloseOrder;
         }
     }
 
@@ -41,6 +52,7 @@ public class OrderManager : MonoBehaviour
                 if (succsesful)
                 {
                     slot.CheckOverOrder();
+                    slot.AddTimeWait();
                     break;
                 }
             }

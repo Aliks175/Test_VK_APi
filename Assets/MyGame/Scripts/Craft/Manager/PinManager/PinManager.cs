@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class PinManager : MonoBehaviour
 {
-    public bool IsCreate { get; private set; }
+    //public bool IsCreate { get; private set; }
     [SerializeField] private OrderManager _orderManager;
-    [SerializeField] private MySpinner _spinner;
+    //[SerializeField] private MySpinner _spinner;
     private TimerInfo _timerCreate;
     private List<SlotPin> _pinSlots;
 
     public void Initialize(InfoPinManager infoPinManager)
     {
-        _spinner.Initialize();
-        _timerCreate = new TimerInfo() { Color = new Color(0, 1, 1, 1), StartTime = infoPinManager.WaitCreatePin };
+        ////_spinner.Initialize();
+        //_timerCreate = new TimerInfo() { Color = new Color(0, 1, 1, 1), StartTime = infoPinManager.WaitCreatePin };
         _pinSlots = new List<SlotPin>(gameObject.GetComponentsInChildren<SlotPin>(true));
         int count = infoPinManager.ValuePinSlot > _pinSlots.Count + 1 ? _pinSlots.Count : infoPinManager.ValuePinSlot;
         List<SlotPin> templist = new();
@@ -42,8 +42,9 @@ public class PinManager : MonoBehaviour
 
     public void AddPin()
     {
-        _spinner.Play(_timerCreate, CreatePin);
-        IsCreate = true;
+        CreatePin();
+        //_spinner.Play(_timerCreate, CreatePin);
+        //IsCreate = true;
     }
 
     private void CreatePin()
@@ -52,7 +53,7 @@ public class PinManager : MonoBehaviour
         {
             slot.AddPin();
         }
-        IsCreate = false;
+        //IsCreate = false;
     }
 
     private void OnValidate()

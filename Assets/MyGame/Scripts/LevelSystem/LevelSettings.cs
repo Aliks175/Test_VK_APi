@@ -16,6 +16,14 @@ public class LevelSettings : MonoBehaviour
         }
     }
     [SerializeField, Min(1)] private int _levelNumber = 1;
+
+    [Space(15)]
+    [Header("Gold")]
+    [Range(3, 10)] public int GoldPin = 3;
+    [Range(5, 10)] public int GoldSword = 4;
+    [Range(4, 10)] public int GoldArmor = 6;
+
+
     public LevelHard LevelHard { get; private set; }
     //public LevelTask LevelTask { get; private set; }
     [Header("ValueSlot")]
@@ -34,10 +42,13 @@ public class LevelSettings : MonoBehaviour
     [Header("Armor")]
     public float WaitCreateeLeatherArmor = 4;
     public float WaitCreateMetallArmor = 6;
+
     public InfoAnvilManager infoAnvilManager;
     public InfoPinManager infoPinManager;
     public InfoSwordManager infoSwordManager;
     public InfoArmorManager infoArmorManager;
+
+    [SerializeField] private LevelProgressionData _levelProgressionData;
 
     private void Awake()
     {
@@ -81,10 +92,10 @@ public class LevelSettings : MonoBehaviour
         ScaleHardLevel();
     }
 
-    //public void SetLevelTask(LevelTask levelTask)
-    //{
-    //    LevelTask = levelTask;
-    //}
+    public TaskProgression GetTaskManuals()
+    {
+        return _levelProgressionData.GetTask(Level);
+    }
 
     public void UpdateChangers(TypeChangers typeChangers)
     {

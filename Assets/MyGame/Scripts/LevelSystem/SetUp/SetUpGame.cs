@@ -8,8 +8,9 @@ public class SetUpGame : MonoBehaviour
     [SerializeField] private SwordManager _swordManager;
     [SerializeField] private MannequinManager _manikenManager;
     [SerializeField] private OrderManager _orderManager;
-    [SerializeField] private TaskManager _taskPlayerManager;
+    [SerializeField] private GoalManager _goalManager;
     [SerializeField] private InstrumentManager _instrumentManager;
+    [SerializeField] private GoldManager _goldManager;
     [SerializeField] private Button Button;
     private LevelSettings levelSettings;
 
@@ -28,13 +29,14 @@ public class SetUpGame : MonoBehaviour
     private void SetUp(LevelHard levelHard)
     {
         if (levelHard == LevelHard.none) return;
-        _orderManager.Initialize(levelHard);
+        _goalManager.Initialize(levelSettings.GetTaskManuals());
+        _orderManager.Initialize(levelHard, _goalManager);
         _anvilManager.Initialize(levelSettings.infoAnvilManager);
         _pinManager.Initialize(levelSettings.infoPinManager);
         _swordManager.Initialize(levelSettings.infoSwordManager);
         _manikenManager.Initialize(levelSettings.infoArmorManager);
-        //taskPlayerManager.Initialize(levelSettings.LevelTask);
         _instrumentManager.Initialize();
+        _goldManager.Initialize(levelSettings);
     }
 
     private bool CheckTutorial()

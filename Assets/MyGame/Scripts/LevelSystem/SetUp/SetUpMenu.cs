@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class SetUpMenu : MonoBehaviour
 {
     [SerializeField] private UpGradeSystem upGradeSystem;
-    [SerializeField] private TaskGenerator taskGenerator;
+    [SerializeField] private TestPanel _testPanel;
     [SerializeField] private Button Button;
 
     // Мы инициируем все что есть по сохранениям тоесть нам нужно запросить сохранения из вк
@@ -23,6 +23,7 @@ public class SetUpMenu : MonoBehaviour
 
         //taskGenerator.Initialize(levelSettings);
         upGradeSystem.Initialize(levelSettings);
+        _testPanel.Initialize(levelSettings);
         Button.onClick.AddListener(() => GameManager.instance.LoadGame());
     }
 }
