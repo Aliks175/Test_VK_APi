@@ -42,14 +42,14 @@ MonoBehaviour:
     TaskManuals:
     - TaskType: 3
       Value: 5
-    - TaskType: 2
-      Value: 10
+    - TaskType: 4
+      Value: 60
   - Level: Level_2
     TaskManuals:
     - TaskType: 1
-      Value: 12
-    - TaskType: 4
-      Value: 60
+      Value: 115
+    - TaskType: 2
+      Value: 20
   - Level: Level_3
     TaskManuals: []
   - Level: Level_4

@@ -3,23 +3,28 @@ using UnityEngine.UI;
 
 public class SetUpGame : MonoBehaviour
 {
+    [Header("ManagerOrder")]
     [SerializeField] private AnvilManager _anvilManager;
     [SerializeField] private PinManager _pinManager;
     [SerializeField] private SwordManager _swordManager;
     [SerializeField] private MannequinManager _manikenManager;
     [SerializeField] private OrderManager _orderManager;
-    [SerializeField] private GoalManager _goalManager;
     [SerializeField] private InstrumentManager _instrumentManager;
+    [Header("ManagerGoal")]
+    [SerializeField] private GoalManager _goalManager;
     [SerializeField] private GoldManager _goldManager;
-    [SerializeField] private Button Button;
-    private LevelSettings levelSettings;
+    [SerializeField] private ResultManager _resultManager;
+    [SerializeField] private ButtonControl _buttonControl;
+    [SerializeField] private TimeManager _timeManager;
+
+    private LevelSettings _levelSettings;
 
     public void Initialize()
     {
-        levelSettings = GameObject.FindFirstObjectByType<LevelSettings>();
-        if (levelSettings == null) return;
-        Button.onClick.AddListener(() => GameManager.instance.LoadMenu());
-        SetUp(levelSettings.LevelHard);
+        _levelSettings = GameObject.FindFirstObjectByType<LevelSettings>();
+        if (_levelSettings == null) return;
+        
+        SetUp(_levelSettings.LevelHard);
         if (!CheckTutorial())
         {
             _orderManager.StartWork();
@@ -29,20 +34,23 @@ public class SetUpGame : MonoBehaviour
     private void SetUp(LevelHard levelHard)
     {
         if (levelHard == LevelHard.none) return;
-        _goalManager.Initialize(levelSettings.GetTaskManuals());
-        _orderManager.Initialize(levelHard, _goalManager);
-        _anvilManager.Initialize(levelSettings.infoAnvilManager);
-        _pinManager.Initialize(levelSettings.infoPinManager);
-        _swordManager.Initialize(levelSettings.infoSwordManager);
-        _manikenManager.Initialize(levelSettings.infoArmorManager);
+        _goalManager.Initialize(_levelSettings.GetTaskManuals(),_orderManager);
+        _orderManager.Initialize(levelHard, _goalManager, _goldManager);
+        _anvilManager.Initialize(_levelSettings.infoAnvilManager);
+        _pinManager.Initialize(_levelSettings.infoPinManager);
+        _swordManager.Initialize(_levelSettings.infoSwordManager);
+        _manikenManager.Initialize(_levelSettings.infoArmorManager);
         _instrumentManager.Initialize();
-        _goldManager.Initialize(levelSettings);
+        _goldManager.Initialize(_levelSettings, _goalManager);
+        _resultManager.Initialize(_orderManager, _goalManager);
+        _timeManager.Initialize(_goalManager);
+        _buttonControl.Initialize();
     }
 
     private bool CheckTutorial()
     {
         bool _isTutorial = false;
-        switch (levelSettings.Level)
+        switch (_levelSettings.Level)
         {
             case 1:
                 //    1) דגמחהט 

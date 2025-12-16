@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,12 +10,13 @@ public class GoalPanel : MonoBehaviour
     [SerializeField] private Slider _trackerGoal;
     [SerializeField] private TextMeshProUGUI _valueGoal;
     public bool IsActive => gameObject.activeSelf;
-    private bool _iscomplite;
-
-    public TaskType taskType => _taskProgressionInfo.TaskType;
+    public bool IsComplite => _iscomplite;
+    public TaskType TaskType => _taskProgressionInfo.TaskType;
+    public event Action<TaskType> Oncomplite;
 
     private TaskProgressionInfo _taskProgressionInfo;
     private SpriteManagerGoal _spriteManagerGoal;
+    private bool _iscomplite;
 
     public void Initialize(TaskProgressionInfo taskProgressionInfo, SpriteManagerGoal spriteManagerGoal)
     {
@@ -32,7 +34,7 @@ public class GoalPanel : MonoBehaviour
     public void CompletingGoals()
     {
         if (_iscomplite) return;
-        if (taskType == TaskType.CloseOrder || taskType == TaskType.CloseOrderForTime)
+        if (TaskType == TaskType.CloseOrder || TaskType == TaskType.CloseOrderForTime)
         {
             if (_trackerGoal.value + 1 < _trackerGoal.maxValue)
             {
@@ -56,7 +58,7 @@ public class GoalPanel : MonoBehaviour
         // Ёто отображение оставшегос€ времени
         // ћы можем просто вывести числовое значение без слайдера
 
-        if (taskType != TaskType.TimeLimit || _iscomplite) return;
+        if (TaskType != TaskType.TimeLimit || _iscomplite) return;
 
         _trackerGoal.value = time;
         ViewUpdate();
@@ -70,15 +72,20 @@ public class GoalPanel : MonoBehaviour
     /// <summary>
     /// ¬ыполнение задани€ дл€ «аработка монет
     /// </summary>
-    /// <param name="Value"></param>
-    public void CompletingGoals(int Value)
+    /// <param name="ValueGold"></param>
+    public void CompletingGoals(int ValueGold)
     {
         // Ёто отображение количества монет 
-        if (taskType != TaskType.MoneyGoal || _iscomplite) return;
+        if (TaskType != TaskType.MoneyGoal || _iscomplite) return;
 
-        if (_trackerGoal.value + Value < _trackerGoal.maxValue)
+
+        Debug.Log($"_trackerGoal.value = {_trackerGoal.value}");
+        Debug.Log($"ValueGold = {ValueGold}");
+        Debug.Log($"_trackerGoal.maxValue = {_trackerGoal.maxValue}");
+        Debug.Log($"_trackerGoal.value + ValueGold < _trackerGoal.maxValue = {ValueGold < _trackerGoal.maxValue}");
+        if (ValueGold < _trackerGoal.maxValue)
         {
-            _trackerGoal.value += Value;
+            _trackerGoal.value = ValueGold;
             ViewUpdate();
         }
         else
@@ -89,10 +96,14 @@ public class GoalPanel : MonoBehaviour
 
     private void GoalSuccess()
     {
-        _trackerGoal.value = _trackerGoal.maxValue;
         Debug.Log("«аказ выполнен");
+        if (TaskType == TaskType.CloseOrderForTime|| TaskType == TaskType.MoneyGoal)
+        {
         _successIcon.SetActive(true);
+        _trackerGoal.value = _trackerGoal.maxValue;
+        }
         _iscomplite = true;
+        Oncomplite?.Invoke(TaskType);
         // ћожно вывести галочку на месте задани€ , это доходчиво объ€снит что задание выполнено 
     }
 
@@ -140,7 +151,7 @@ public class GoalPanel : MonoBehaviour
                 _valueGoal.text = _taskProgressionInfo.Value.ToString();
                 _trackerGoal.maxValue = _taskProgressionInfo.Value;
                 _trackerGoal.value = _trackerGoal.maxValue;
-                _valueGoal.text = $"{_trackerGoal.value}/{_trackerGoal.maxValue}";
+                _valueGoal.text = $"{_trackerGoal.maxValue}";
                 break;
             default:
                 break;

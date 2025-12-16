@@ -309,6 +309,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Human
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 80
+        width: 51
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f151ab820cdf0cc4d9eb9588228e28f4
+      internalID: 1796176000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -325,6 +347,7 @@ TextureImporter:
     nameFileIdTable:
       Gold: -2278566297644842510
       GoldUp: 2487655054320033108
+      Human: 1796176000
       Order: -1313622784187593632
       OrderSpeed: -2297356003100555120
       OrderSuccess: 3922105346314008136

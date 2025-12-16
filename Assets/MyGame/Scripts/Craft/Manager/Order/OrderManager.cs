@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,9 @@ public class OrderManager : MonoBehaviour
     private List<SlotOrder> _orderSlots;
     private Coroutine _coroutine;
     private GoalManager _goalManager;
+    private GoldManager _goldManager;
+
+    public event Action OnOver;
 
     private void OnDisable()
     {
@@ -17,10 +21,10 @@ public class OrderManager : MonoBehaviour
         }
     }
 
-    public void Initialize(LevelHard typeOrder, GoalManager taskManager)
+    public void Initialize(LevelHard typeOrder, GoalManager taskManager, GoldManager goldManager)
     {
         _orderSlots = new List<SlotOrder>(gameObject.GetComponentsInChildren<SlotOrder>(true));
-
+        _goldManager = goldManager;
         _goalManager = taskManager;
         if (_orderSlots == null) return;
 
@@ -39,6 +43,20 @@ public class OrderManager : MonoBehaviour
         if (_coroutine != null) return;
         _isWork = true;
         _coroutine = StartCoroutine(Wait());
+
+    }
+
+    public void StopWork()
+    {
+        // когда у нас отыгрывает что мы закончили раунд
+        // мы должны дождаться когда все клиенты уйдут
+        // и после этого появляется панель с финальными результатами
+        // 
+        if (_coroutine == null) return;
+        _isWork = false;
+        StopCoroutine(_coroutine);
+        StartCoroutine(WaitLeaveClient());
+        Debug.Log("Work is Stop");
     }
 
     public bool UseOrder(OrderItem orderItem)
@@ -53,6 +71,7 @@ public class OrderManager : MonoBehaviour
                 {
                     slot.CheckOverOrder();
                     slot.AddTimeWait();
+                    _goldManager.SetGold(orderItem);
                     break;
                 }
             }
@@ -76,25 +95,26 @@ public class OrderManager : MonoBehaviour
             }
         }
     }
-}
 
-public enum LevelHard
-{
-    //    1) гвозди 
-    //1 ур (Туториал и игровой процесс)
-    //2) гвозди + мечи 
-    //2 - 3 ур 
-    //3) гвозди + мечи + кожаный доспех
-    //4 - 6 ур 
-    //4) гвозди + мечи + кожаный доспех + металлический доспех 
-    //7 - 10 ур
-    //5) гвозди + мечи + кожаный доспех + металлический доспех  + полный меч
-    //+10 ур
+    private IEnumerator WaitLeaveClient()
+    {
+        Debug.Log("WaitLeaveClient");
+        yield return new WaitUntil(() => CheckClearClient());
+        OnOver?.Invoke();
+    }
 
-    none,
-    LevelOne,//    1) гвозди - 1 ур (Туториал и игровой процесс)
-    LevelTwo,//2) гвозди + меч - 2 - 3 ур 
-    LevelThree,//3) гвозди + мечи + кожаный доспех - 4 - 6 ур 
-    LevelFour,//4) гвозди + мечи + кожаный доспех + металлический доспех - 7 - 10 ур
-    LevelFive,//5) гвозди + мечи + кожаный доспех + металлический доспех  + полный меч - +10 ур
+    private bool CheckClearClient()
+    {
+        bool NoClient = true;
+        Debug.Log("CheckClearClient");
+        foreach (SlotOrder slot in _orderSlots)
+        {
+            if (!slot.IsVisit)
+            {
+                return false;
+            }
+        }
+        return NoClient;
+    }
+
 }

@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GetSceneLoadProgress(InitializeGame));
     }
 
+
+
     public void LoadMenu()
     {
         _panelLoading.SetActive(true);

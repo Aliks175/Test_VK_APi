@@ -7,7 +7,7 @@ public class TimerOrder : MonoBehaviour
     [SerializeField] private Slider _slider;
 
     private TimerInfo TimerWait;
-    private TimerInfo TimerGoodJob;
+    //private TimerInfo TimerGoodJob;
     private Action _action;
     private float _startTime = 0;
     private float _lostTime = 0;
@@ -16,7 +16,7 @@ public class TimerOrder : MonoBehaviour
     public void Initialize(float _timeWait)
     {
         TimerWait = new TimerInfo() { Color = new Color(0.5f, 1, 0.5f, 1), StartTime = _timeWait };
-        TimerGoodJob = new TimerInfo() { Color = new Color(1, 0, 0, 1), StartTime = _timeWait / 2 };
+        //TimerGoodJob = new TimerInfo() { Color = new Color(1, 0, 0, 1), StartTime = _timeWait / 2 };
     }
 
     private void Update()

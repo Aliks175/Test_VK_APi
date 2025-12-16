@@ -12,8 +12,8 @@ public class SlotOrder : MonoBehaviour
     [Header("TimerOrderSettings")]
     [SerializeField] private float _timeWait = 10f;
     [Header("RandomVisitSettings")]
-    [SerializeField] private float _timeWaitMax = 7f;
-    [SerializeField] private float _timeWaitMin = 3f;
+    //[SerializeField] private float _timeWaitMax = 7f;
+    //[SerializeField] private float _timeWaitMin = 3f;
     private TaskInfo _taskInfo;
     private ListOrders _listOrders;
     private LevelHard _typeOrder;
@@ -53,7 +53,7 @@ public class SlotOrder : MonoBehaviour
         {
             IsVisit = false;
             _viewOrder.SetView(_listOrders);
-            float time = Random.Range(_timeWaitMin, _timeWaitMax);
+            float time = 7f;
             wait = wait ?? new WaitForSeconds(time);
             StartCoroutine(ComonVisit());
         }
@@ -69,10 +69,10 @@ public class SlotOrder : MonoBehaviour
         if (!CheckListOrder(OrderItem.none))
         {
             _taskInfo.IsFastOrder = _timerOrder.CheckFastOrder();
-
+            _taskInfo.isComplite = true;
             Debug.Log("Use - OnCloseOrder");
             OnCloseOrder?.Invoke(_taskInfo);
-            Clientleave();
+            ReadyNewClient();
         }
     }
 
@@ -107,6 +107,13 @@ public class SlotOrder : MonoBehaviour
     }
 
     private void Clientleave()
+    {
+        _taskInfo.isComplite = false;
+        OnCloseOrder?.Invoke(_taskInfo);
+        ReadyNewClient();
+    }
+
+    private void ReadyNewClient()
     {
         ClearListOrder();
         _viewOrder.OnView(_listOrders);
