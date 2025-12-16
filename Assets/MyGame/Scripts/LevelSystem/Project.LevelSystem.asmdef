@@ -1,0 +1,16 @@
+{
+    "name": "Project.LevelSystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e13eaa400be0905498d8e96fe23f8303"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

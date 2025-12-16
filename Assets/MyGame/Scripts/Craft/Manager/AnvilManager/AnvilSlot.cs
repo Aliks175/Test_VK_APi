@@ -98,8 +98,3 @@ public class AnvilSlot : MonoBehaviour
     }
 }
 
-public struct TimerInfo
-{
-    public Color Color;
-    public float StartTime;
-}
